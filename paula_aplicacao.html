@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplicação · Mentoria · Paula Obradovic</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bordeaux: #5C1A1A;
+    --bordeaux-deep: #3D0F0F;
+    --gold: #C9A96E;
+    --cream: #FAF6EF;
+    --dark: #1A0A0A;
+    --mid: #8A7A6A;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--dark); color:var(--cream); font-family:'Montserrat',sans-serif; min-height:100vh; }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background:radial-gradient(ellipse 70% 40% at 50% 0%, rgba(92,26,26,0.5) 0%, transparent 60%);
+    pointer-events:none; z-index:0;
+  }
+  .wrap { position:relative; z-index:1; max-width:660px; margin:0 auto; padding:52px 24px 90px; }
+
+  .header { text-align:center; margin-bottom:52px; animation:fadeUp 0.8s ease both; }
+  .swan { font-size:26px; display:block; margin-bottom:16px; }
+  .brand { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:5px; text-transform:uppercase; color:var(--gold); display:block; margin-bottom:24px; }
+  .gold-line { width:48px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:0 auto 24px; }
+  h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(30px,6vw,44px); font-weight:300; line-height:1.2; color:var(--cream); }
+  h1 em { font-style:italic; color:var(--gold); }
+  .header-sub { font-size:12px; font-weight:300; color:var(--mid); line-height:1.8; max-width:420px; margin:14px auto 0; }
+
+  .prog-wrap { margin-bottom:40px; animation:fadeUp 0.8s ease 0.1s both; }
+  .prog-top { display:flex; justify-content:space-between; margin-bottom:8px; }
+  .prog-label { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--gold); }
+  .prog-count { font-family:'Cormorant Garamond',serif; font-size:13px; color:var(--mid); }
+  .prog-bar { height:1px; background:rgba(201,169,110,0.15); }
+  .prog-fill { height:100%; background:var(--gold); transition:width 0.5s ease; }
+
+  .form-card { border:1px solid rgba(201,169,110,0.12); animation:fadeUp 0.8s ease 0.2s both; }
+
+  .step { display:none; padding:44px 40px; }
+  .step.active { display:block; animation:stepIn 0.35s ease both; }
+  @media(max-width:480px){ .step{ padding:28px 20px; } }
+  @keyframes stepIn { from{ opacity:0; transform:translateX(10px); } to{ opacity:1; transform:translateX(0); } }
+
+  .step-label { font-family:'Cormorant Garamond',serif; font-size:10px; letter-spacing:4px; color:var(--gold); text-transform:uppercase; display:block; margin-bottom:20px; }
+
+  .field { margin-bottom:28px; }
+  .field:last-of-type { margin-bottom:0; }
+  .field-q { font-family:'Cormorant Garamond',serif; font-size:clamp(17px,3.5vw,22px); font-weight:400; line-height:1.35; color:var(--cream); margin-bottom:6px; }
+  .field-hint { font-size:11px; font-weight:300; color:var(--mid); margin-bottom:14px; line-height:1.6; }
+
+  input[type=text], input[type=tel], textarea {
+    width:100%; background:transparent; border:none;
+    border-bottom:1px solid rgba(201,169,110,0.22);
+    padding:12px 0; color:var(--cream);
+    font-family:'Montserrat',sans-serif; font-size:14px; font-weight:300;
+    outline:none; transition:border-color 0.3s;
+    -webkit-appearance:none; appearance:none; border-radius:0;
+  }
+  input::placeholder, textarea::placeholder { color:rgba(250,246,239,0.2); }
+  input:focus, textarea:focus { border-bottom-color:var(--gold); }
+  textarea { resize:none; height:90px; line-height:1.7; }
+
+  /* OPTION CARDS */
+  .opt-card { display:flex; align-items:flex-start; gap:12px; padding:13px 16px; border:1px solid rgba(201,169,110,0.15); cursor:pointer; font-size:13px; font-weight:300; color:rgba(250,246,239,0.7); line-height:1.5; transition:all 0.2s; margin-bottom:8px; }
+  .opt-card:last-child { margin-bottom:0; }
+  .opt-card.sel { border-color:rgba(201,169,110,0.5); color:var(--cream); background:rgba(201,169,110,0.06); }
+  .opt-box { width:16px; min-width:16px; height:16px; border:1px solid rgba(201,169,110,0.3); display:inline-block; margin-top:1px; transition:all 0.2s; }
+  .opt-card.sel .opt-box { background:var(--gold); border-color:var(--gold); }
+
+  /* SCALE */
+  .scale { display:flex; gap:6px; flex-wrap:wrap; }
+  .scale-btn { flex:1; min-width:36px; padding:11px 4px; border:1px solid rgba(201,169,110,0.15); background:transparent; color:rgba(250,246,239,0.45); font-family:'Cormorant Garamond',serif; font-size:17px; cursor:pointer; transition:all 0.2s; text-align:center; }
+  .scale-btn:hover, .scale-btn.sel { border-color:var(--gold); color:var(--gold); background:rgba(201,169,110,0.08); }
+  .scale-labels { display:flex; justify-content:space-between; margin-top:6px; font-size:10px; color:var(--mid); }
+
+  .err { font-size:11px; color:#E07070; margin-top:6px; display:none; }
+
+  .nav { display:flex; align-items:center; justify-content:space-between; margin-top:36px; padding-top:24px; border-top:1px solid rgba(201,169,110,0.1); }
+  .btn-back { background:transparent; border:none; color:var(--mid); font-family:'Montserrat',sans-serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; padding:6px 0; transition:color 0.2s; }
+  .btn-back:hover { color:var(--cream); }
+  .btn-back:disabled { opacity:0; pointer-events:none; }
+  .btn-next { background:transparent; border:1px solid var(--gold); color:var(--gold); font-family:'Montserrat',sans-serif; font-size:10px; font-weight:500; letter-spacing:3px; text-transform:uppercase; padding:13px 28px; cursor:pointer; transition:all 0.3s; position:relative; overflow:hidden; }
+  .btn-next::before { content:''; position:absolute; inset:0; background:var(--gold); transform:translateX(-100%); transition:transform 0.35s; z-index:0; }
+  .btn-next:hover::before { transform:translateX(0); }
+  .btn-next:hover { color:var(--dark); }
+  .btn-next span { position:relative; z-index:1; }
+
+  .success { display:none; padding:72px 40px; text-align:center; animation:fadeUp 0.6s ease both; }
+  .success .swan-lg { font-size:52px; display:block; margin-bottom:24px; }
+  .success h2 { font-family:'Cormorant Garamond',serif; font-size:34px; font-weight:300; color:var(--gold); margin-bottom:16px; }
+  .success p { font-size:13px; font-weight:300; color:var(--mid); line-height:2; max-width:380px; margin:0 auto; }
+  .success .gold-line-sm { width:40px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:20px auto; }
+
+  .footer { text-align:center; margin-top:44px; font-size:10px; color:rgba(138,122,106,0.35); letter-spacing:3px; text-transform:uppercase; animation:fadeUp 1s ease 0.4s both; }
+
+  @keyframes fadeUp { from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:translateY(0); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <span class="swan">🦢</span>
+    <span class="brand">Paula Obradovic · Mentoria Individual</span>
+    <div class="gold-line"></div>
+    <h1>Aplicação para a<br><em>Mentoria das Três Elegâncias</em></h1>
+    <p class="header-sub">Paula lê cada aplicação pessoalmente. Responda com honestidade — não existe resposta certa.</p>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-top">
+      <span class="prog-label">Sua aplicação</span>
+      <span class="prog-count" id="prog-count">Bloco 1 de 4</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:25%"></div></div>
+  </div>
+
+  <div class="form-card">
+
+    <!-- BLOCO 1 -->
+    <div class="step active" id="step-1">
+      <span class="step-label">Bloco 01 · Quem é você</span>
+
+      <div class="field">
+        <p class="field-q">Como você gostaria de ser chamada?</p>
+        <input type="text" id="q1" placeholder="Seu nome" autocomplete="off">
+        <p class="err" id="err-q1">Por favor, preencha este campo.</p>
+      </div>
+
+      <div class="field">
+        <p class="field-q">Qual o seu WhatsApp?</p>
+        <input type="tel" id="q2" placeholder="(00) 00000-0000">
+        <p class="err" id="err-q2">Por favor, preencha este campo.</p>
+      </div>
+
+      <div class="field">
+        <p class="field-q">Qual o seu Instagram?</p>
+        <p class="field-hint">Seu perfil ajuda Paula a entender quem você é antes da conversa.</p>
+        <input type="text" id="q3" placeholder="@seuperfil">
+        <p class="err" id="err-q3">Por favor, preencha este campo.</p>
+      </div>
+
+      <div class="field">
+        <p class="field-q">O que você faz profissionalmente?</p>
+        <p class="field-hint">Cargo, área, se tem negócio próprio ou é CLT.</p>
+        <input type="text" id="q4" placeholder="Ex: Empresária, médica, executiva...">
+        <p class="err" id="err-q4">Por favor, preencha este campo.</p>
+      </div>
+
+      <div class="nav">
+        <button class="btn-back" disabled>Voltar</button>
+        <button class="btn-next" onclick="goNext(1)"><span>Continuar →</span></button>
+      </div>
+    </div>
+
+    <!-- BLOCO 2 -->
+    <div class="step" id="step-2">
+      <span class="step-label">Bloco 02 · O que te trouxe até aqui</span>
+
+      <div class="field">
+        <p class="field-q">O que te trouxe até aqui?</p>
+        <p class="field-hint">Selecione todas que fazem sentido para você.</p>
+        <div id="motivos">
+          <div class="opt-card" onclick="toggleOpt(this,'Sinto que não sou percebida no nível que cheguei')"><span class="opt-box"></span>Sinto que não sou percebida no nível que cheguei.</div>
+          <div class="opt-card" onclick="toggleOpt(this,'Quero me sentir mais segura em ambientes sofisticados')"><span class="opt-box"></span>Quero me sentir mais segura em ambientes sofisticados.</div>
+          <div class="opt-card" onclick="toggleOpt(this,'Tenho dificuldade em criar conexões reais')"><span class="opt-box"></span>Tenho dificuldade em criar conexões reais.</div>
+          <div class="opt-card" onclick="toggleOpt(this,'Sinto que peço licença para ocupar espaços que já são meus')"><span class="opt-box"></span>Sinto que peço licença para ocupar espaços que já são meus.</div>
+          <div class="opt-card" onclick="toggleOpt(this,'Quero ascensão social de forma natural e autêntica')"><span class="opt-box"></span>Quero ascensão social de forma natural e autêntica.</div>
+          <div class="opt-card" onclick="toggleOpt(this,'Quero alinhar quem sou com como o mundo me vê')"><span class="opt-box"></span>Quero alinhar quem sou com como o mundo me vê.</div>
+        </div>
+        <input type="hidden" id="q5">
+        <p class="err" id="err-q5">Por favor, selecione ao menos uma opção.</p>
+      </div>
+
+      <div class="field">
+        <p class="field-q">Em 6 meses, como você quer ser percebida?</p>
+        <p class="field-hint">Que ambientes quer ocupar, que círculos quer acessar, que reconhecimento quer ter.</p>
+        <textarea id="q6" placeholder="Seja específica sobre o que você quer construir..."></textarea>
+        <p class="err" id="err-q6">Por favor, preencha este campo.</p>
+      </div>
+
+      <div class="nav">
+        <button class="btn-back" onclick="goBack(2)">Voltar</button>
+        <button class="btn-next" onclick="goNext(2)"><span>Continuar →</span></button>
+      </div>
+    </div>
+
+    <!-- BLOCO 3 -->
+    <div class="step" id="step-3">
+      <span class="step-label">Bloco 03 · Seu histórico</span>
+
+      <div class="field">
+        <p class="field-q">Você já investiu em si mesma antes?</p>
+        <p class="field-hint">Terapia, cursos, mentorias, coaches de imagem ou comportamento. O que foi e o que ficou faltando.</p>
+        <textarea id="q7" placeholder="Conte sua experiência anterior..."></textarea>
+        <p class="err" id="err-q7">Por favor, preencha este campo.</p>
+      </div>
+
+      <div class="field">
+        <p class="field-q">Você está ciente de que ao ser selecionada haverá um investimento?</p>
+        <div id="inv-opts" style="margin-top:14px;">
+          <div class="opt-card" onclick="selectSingle('inv-opts',this,'Não, não é meu momento')"><span class="opt-box"></span>Não, não é meu momento.</div>
+          <div class="opt-card" onclick="selectSingle('inv-opts',this,'Sim, mas quero saber um pouco mais antes')"><span class="opt-box"></span>Sim, mas quero saber um pouco mais antes.</div>
+          <div class="opt-card" onclick="selectSingle('inv-opts',this,'Sim, me sinto pronta para me transformar')"><span class="opt-box"></span>Sim, me sinto pronta para me transformar.</div>
+        </div>
+        <input type="hidden" id="q8">
+        <p class="err" id="err-q8">Por favor, selecione uma opção.</p>
+      </div>
+
+      <div class="nav">
+        <button class="btn-back" onclick="goBack(3)">Voltar</button>
+        <button class="btn-next" onclick="goNext(3)"><span>Continuar →</span></button>
+      </div>
+    </div>
+
+    <!-- BLOCO 4 -->
+    <div class="step" id="step-4">
+      <span class="step-label">Bloco 04 · Comprometimento</span>
+
+      <div class="field">
+        <p class="field-q">O quanto você está pronta para começar agora?</p>
+        <p class="field-hint">1 = ainda estou avaliando · 10 = totalmente pronta</p>
+        <div class="scale" id="scale-q9">
+          <button class="scale-btn" onclick="pickScale('q9',this,1)">1</button>
+          <button class="scale-btn" onclick="pickScale('q9',this,2)">2</button>
+          <button class="scale-btn" onclick="pickScale('q9',this,3)">3</button>
+          <button class="scale-btn" onclick="pickScale('q9',this,4)">4</button>
+          <button class="scale-btn" onclick="pickScale('q9',this,5)">5</button>
+          <button class="scale-btn" onclick="pickScale('q9',this,6)">6</button>
+          <button class="scale-btn" onclick="pickScale('q9',this,7)">7</button>
+          <button class="scale-btn" onclick="pickScale('q9',this,8)">8</button>
+          <button class="scale-btn" onclick="pickScale('q9',this,9)">9</button>
+          <button class="scale-btn" onclick="pickScale('q9',this,10)">10</button>
+        </div>
+        <div class="scale-labels"><span>Ainda avaliando</span><span>Totalmente pronta</span></div>
+        <input type="hidden" id="q9">
+        <p class="err" id="err-q9">Por favor, selecione um valor.</p>
+      </div>
+
+      <div class="field">
+        <p class="field-q">Se você pudesse dizer uma coisa para Paula, o que seria?</p>
+        <p class="field-hint">Esta é sua chance de se apresentar de verdade. Fale diretamente para ela.</p>
+        <textarea id="q10" placeholder="Fale diretamente para Paula..."></textarea>
+        <p class="err" id="err-q10">Por favor, preencha este campo.</p>
+      </div>
+
+      <div class="nav">
+        <button class="btn-back" onclick="goBack(4)">Voltar</button>
+        <button class="btn-next" onclick="submitForm()"><span>Enviar aplicação 🦢</span></button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success" id="success">
+      <span class="swan-lg">🦢</span>
+      <h2>Aplicação recebida.</h2>
+      <div class="gold-line-sm"></div>
+      <p>
+        Obrigada por confiar nesse processo.<br><br>
+        Paula lê cada aplicação pessoalmente.<br>
+        Se o seu momento e o dela se encontrarem,<br>
+        ela entrará em contato pelo WhatsApp<br>
+        em até 5 dias úteis.<br><br>
+        Enquanto isso, continue acompanhando<br>
+        o trabalho dela no Instagram<br>
+        <strong style="color:var(--gold);">@paulaobradovic</strong>
+      </p>
+    </div>
+
+  </div>
+
+  <p class="footer">As Três Elegâncias · Paula Obradovic · Confidencial</p>
+</div>
+
+<script>
+  const TOTAL = 4;
+  let cur = 1;
+
+  const blockFields = {
+    1: ['q1','q2','q3','q4'],
+    2: ['q5','q6'],
+    3: ['q7','q8'],
+    4: ['q9','q10']
+  };
+
+  function getVal(id) { return (document.getElementById(id)?.value||'').trim(); }
+
+  function validateBlock(block) {
+    let ok = true;
+    for (const id of blockFields[block]) {
+      const v = getVal(id);
+      const err = document.getElementById('err-'+id);
+      if (!v) { if(err) err.style.display='block'; ok=false; }
+      else { if(err) err.style.display='none'; }
+    }
+    return ok;
+  }
+
+  function goNext(block) {
+    if (!validateBlock(block)) return;
+    document.getElementById('step-'+block).classList.remove('active');
+    cur = block+1;
+    document.getElementById('step-'+cur).classList.add('active');
+    const pct = (cur/TOTAL)*100;
+    document.getElementById('prog-fill').style.width = pct+'%';
+    document.getElementById('prog-count').textContent = 'Bloco '+cur+' de '+TOTAL;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function goBack(block) {
+    document.getElementById('step-'+block).classList.remove('active');
+    cur = block-1;
+    document.getElementById('step-'+cur).classList.add('active');
+    const pct = (cur/TOTAL)*100;
+    document.getElementById('prog-fill').style.width = pct+'%';
+    document.getElementById('prog-count').textContent = 'Bloco '+cur+' de '+TOTAL;
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // Multi-select
+  function toggleOpt(el, val) {
+    el.classList.toggle('sel');
+    const selected = Array.from(document.querySelectorAll('#motivos .opt-card.sel'))
+      .map(c => c.getAttribute('data-val'));
+    // store value on element
+    el.setAttribute('data-val', val);
+    const allSel = Array.from(document.querySelectorAll('#motivos .opt-card.sel'))
+      .map(c => c.getAttribute('data-val')).filter(Boolean);
+    document.getElementById('q5').value = allSel.join(' | ');
+  }
+
+  // Single select
+  function selectSingle(groupId, el, val) {
+    document.querySelectorAll('#'+groupId+' .opt-card').forEach(c => c.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('q8').value = val;
+  }
+
+  function pickScale(id, btn, val) {
+    document.querySelectorAll('#scale-'+id+' .scale-btn').forEach(b => b.classList.remove('sel'));
+    btn.classList.add('sel');
+    document.getElementById(id).value = val;
+  }
+
+  async function submitForm() {
+    if (!validateBlock(4)) return;
+    const btn = document.querySelector('#step-4 .btn-next span');
+    btn.textContent = 'Enviando...';
+
+    const data = {
+      nome: getVal('q1'),
+      whatsapp: getVal('q2'),
+      instagram: getVal('q3'),
+      profissao: getVal('q4'),
+      motivos: getVal('q5'),
+      ambicao_6_meses: getVal('q6'),
+      historico_investimentos: getVal('q7'),
+      consciencia_investimento: getVal('q8'),
+      comprometimento: getVal('q9'),
+      palavra_final: getVal('q10'),
+    };
+
+    try {
+      const res = await fetch('https://formspree.io/f/xnjwbvql', {
+        method:'POST',
+        headers:{'Accept':'application/json','Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+      if (res.ok) {
+        document.getElementById('step-4').classList.remove('active');
+        document.getElementById('success').style.display='block';
+        document.getElementById('prog-fill').style.width='100%';
+        document.getElementById('prog-count').textContent='Concluído ✦';
+        window.scrollTo({top:0,behavior:'smooth'});
+      } else {
+        btn.textContent='Enviar aplicação 🦢';
+        alert('Algo deu errado. Tente novamente.');
+      }
+    } catch(e) {
+      btn.textContent='Enviar aplicação 🦢';
+      alert('Erro de conexão. Tente novamente.');
+    }
+  }
+
+  // WhatsApp mask
+  document.getElementById('q2').addEventListener('input',function(e){
+    let v=e.target.value.replace(/\D/g,'').slice(0,11);
+    if(v.length>6) v='('+v.slice(0,2)+') '+v.slice(2,7)+'-'+v.slice(7);
+    else if(v.length>2) v='('+v.slice(0,2)+') '+v.slice(2);
+    else if(v.length>0) v='('+v;
+    e.target.value=v;
+  });
+</script>
+</body>
+</html>
